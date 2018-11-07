@@ -93,7 +93,7 @@
  '(org-agenda-files (quote ("~/bubmake/rapport2.org")))
  '(package-selected-packages
    (quote
-    (counsel-projectile wgrep-ag minimap ac-etags counsel ivy smart-mode-line which-key expand-region use-package magit dante ghc ghci-completion slime slime-company ng2-mode angular-mode angular-snippets racket-mode vue-mode vue-html-mode neotree lorem-ipsum company-web web-completion-data web-mode sudo-edit indium js3-mode ag xref-js2 js2-refactor company-tern c-eldoc irony-eldoc company-irony irony 0blayout helm-dash company-c-headers company-php company-rtags company-quickhelp elpy yasnippet-snippets simple-httpd skewer-mode js2-mode company company-emacs-eclim eclim org-ref solarized-theme ##))))
+    (outline-magic counsel-projectile wgrep-ag minimap ac-etags counsel ivy smart-mode-line which-key expand-region use-package magit dante ghc ghci-completion slime slime-company ng2-mode angular-mode angular-snippets racket-mode vue-mode vue-html-mode neotree lorem-ipsum company-web web-completion-data web-mode sudo-edit indium js3-mode ag xref-js2 js2-refactor company-tern c-eldoc irony-eldoc company-irony irony 0blayout helm-dash company-c-headers company-php company-rtags company-quickhelp elpy yasnippet-snippets simple-httpd skewer-mode js2-mode company company-emacs-eclim eclim org-ref solarized-theme ##))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -361,7 +361,7 @@
 (use-package expand-region
   :ensure t
   :bind ("C-=" . er/expand-region)
-  :config
+  :init
   (delete-selection-mode 1))
 
 (use-package which-key
@@ -448,3 +448,26 @@
   :config
   (add-hook 'compilation-mode-hook 'winnow-mode))
 
+(use-package eyebrowse
+  :ensure t
+  :init
+  (setq eyebrowse-keymap-prefix (kbd "C-x x"))
+  :config
+  (eyebrowse-mode t)
+  (setq eyebrowse-new-workspace t))
+
+(use-package outline-magic
+  :ensure t
+  :init
+  (progn
+  (add-hook 'outline-mode-hook 
+          (lambda () 
+            (require 'outline-cycle)))
+            
+(add-hook 'outline-minor-mode-hook 
+          (lambda () 
+            (require 'outline-magic)
+            (define-key outline-minor-mode-map  (kbd "<C-tab>") 'outline-cycle)))
+
+
+))
