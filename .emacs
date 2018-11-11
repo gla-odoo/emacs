@@ -11,8 +11,8 @@
 
 
 ; ido mode
-(require 'ido)
-(ido-mode t)
+;;(require 'ido)
+;;(ido-mode t)
 
 
 ; utf-8 pour tout
@@ -86,14 +86,17 @@
 		   company-oddmuse company-dabbrev company-clang
 		   (company-tern :with company-yasnippet))))
  '(company-minimum-prefix-length 1)
+ '(counsel-etags-update-tags-backend (quote projectile-regenerate-tags))
  '(custom-safe-themes
    (quote
     ("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" default)))
+ '(dumb-jump-prefer-searcher (quote ag))
  '(helm-dash-browser-func (quote eww))
  '(org-agenda-files (quote ("~/bubmake/rapport2.org")))
  '(package-selected-packages
    (quote
-    (outline-magic counsel-projectile wgrep-ag minimap ac-etags counsel ivy smart-mode-line which-key expand-region use-package magit dante ghc ghci-completion slime slime-company ng2-mode angular-mode angular-snippets racket-mode vue-mode vue-html-mode neotree lorem-ipsum company-web web-completion-data web-mode sudo-edit indium js3-mode ag xref-js2 js2-refactor company-tern c-eldoc irony-eldoc company-irony irony 0blayout helm-dash company-c-headers company-php company-rtags company-quickhelp elpy yasnippet-snippets simple-httpd skewer-mode js2-mode company company-emacs-eclim eclim org-ref solarized-theme ##))))
+    (counsel-etags ggtags dumb-jump rainbow-delimiters outline-magic counsel-projectile wgrep-ag minimap ac-etags counsel ivy smart-mode-line which-key expand-region use-package magit dante ghc ghci-completion slime slime-company ng2-mode angular-mode angular-snippets racket-mode vue-mode vue-html-mode neotree lorem-ipsum company-web web-completion-data web-mode sudo-edit indium js3-mode ag xref-js2 js2-refactor company-tern c-eldoc irony-eldoc company-irony irony 0blayout helm-dash company-c-headers company-php company-rtags company-quickhelp elpy yasnippet-snippets simple-httpd skewer-mode js2-mode company company-emacs-eclim eclim org-ref solarized-theme ##)))
+ '(projectile-tags-command "uctags -Re -f \"%s\" %s"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -471,3 +474,16 @@
 
 
 ))
+
+(use-package dumb-jump
+:bind (("M-g o" . dumb-jump-go-other-window)
+("M-g j" . dumb-jump-go)
+("M-g x" . dumb-jump-go-prefer-external)
+("M-g z" . dumb-jump-go-prefer-external-other-window))
+:config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+:ensure)
+
+(use-package counsel-etags
+  :ensure t
+  :bind
+  ("M-?" . counsel-etags-find-tag-at-point))
