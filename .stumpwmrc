@@ -1,0 +1,22 @@
+(in-package :stumpwm)
+
+(ql:quickload "clx-truetype")
+(load-module "ttf-fonts")
+ (xft:cache-fonts)
+(set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
+
+;; command to launch or if already running give focus to firefox
+;; cycles through multiple instances of firefox when repeated if
+;; multiple instances exist
+(defcommand rr-firefox () ()
+(run-or-raise "firefox" '(:class "Firefox")))
+
+(defcommand rr-tilda () ()
+(run-or-raise "tilda" '(:class "Tilda")))
+
+(stumpwm:define-key stumpwm:*root-map* (stumpwm:kbd "f") "rr-firefox")
+(stumpwm:define-key stumpwm:*root-map* (stumpwm:kbd "t") "rr-tilda")
+
+(stumpwm:toggle-mode-line (stumpwm:current-screen)
+                          (stumpwm:current-head))
+			  
