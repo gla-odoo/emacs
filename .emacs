@@ -1,433 +1,487 @@
-(server-start)
 
+;;;;;;;;;;;;;;;;;;;;;;;
+;;(server-start)
+
+(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+(defvar outline-minor-mode-prefix "\M-\"")
+
+
+(setq-default indent-tabs-mode nil)
+(setq custom-tab-width 4)
 (require 'package)
 (package-initialize)
-(add-to-list 'package-archives (cons "melpa" (concat "http://melpa.org/packages/")) t)
 
-; no startup message
+(add-to-list 'package-archives (cons "melpa" (concat "http://melpa.org/packages/")) t)
+(require 'use-package)
+
+(add-to-list 'load-path "/lisp/")
+
+
+;;;;;; for exwm ;;;;;;;
+
+;; (require 'exwm)
+;; (require 'exwm-config)
+;; (exwm-config-default)
+;; (exwm-enable)
+
+;; affichage de l'heure
+(setq display-time-24hr-format t)
+(display-time-mode 1)
+
+(setq column-number-mode t)
+(elpy-enable)
+
+;;no startup message
 (setq inhibit-startup-message t)
 
 (setq timeclock-mode-line-display t)
-
-
-; ido mode
+;;(global-linum-mode t) ;; enable line numbers globally
+;;ido mode
 ;;(require 'ido)
 ;;(ido-mode t)
 
-
-; utf-8 pour tout
+;; utf8 pour tout
 (prefer-coding-system 'utf-8)
 
-(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
-(if window-system
-   (tool-bar-mode -1))
+;;(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
+
 
 (if window-system
+    (tool-bar-mode -1))
 
+(if window-system
     (menu-bar-mode -1))
-(if window-system
 
+(if window-system
     (scroll-bar-mode -1))
 
+;; delete what is selected when typing
+(delete-selection-mode 1)
+
+;; current line highlighted
+(global-hl-line-mode t)
 
 
-
-(setq org-export-with-sub-superscripts '{})
-
-
-
-;; pretty fontification of code in org
-;;(defface org-block-begin-line
-;;  '((t (:underline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF")))
-;;  "Face used for the line delimiting the begin of source blocks.")
-
-;; (defface org-block-background
-;;  '((t (:background "#FFFFEA")))
-;;  "Face used for the source block background.")
-
-;; (defface org-block-end-line
-;;  '((t (:overline "#A7A6AA" :foreground "#008ED1" :background "#EAEAFF")))
-;;  "Face used for the line delimiting the end of source blocks.")
+;; Save whatever’s in the current (system) clipboard before
+;; replacing it with the Emacs’ text.
+;; https://github.com/dakrone/eos/blob/master/eos.org
+(setq save-interprogram-paste-before-kill t)
 
 
-;; to use plantuml in babel/org-mode
-;; active Org-babel languages
-;;(org-babel-do-load-languages
-;; 'org-babel-load-languages
-;; '(;; other Babel languages
-;;   (plantuml . t)))
-
-;;(setq org-plantuml-jar-path
-;;      (expand-file-name "~/org/plantuml.jar"))
-
-
-
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desi(setq org-src-fontify-natively t)    red
-
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
-
+(add-to-list 'load-path "/usr/share/emacs/26.1/site-lisp")
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ag-arguments (quote ("--smart-case" "--stats" "-C")))
- '(ag-ignore-list (quote ("i18n")))
- '(company-backends
-   (quote
-    (company-irony company-bbdb company-nxml company-css company-eclim company-semantic company-xcode company-cmake company-capf company-files
-		   (company-dabbrev-code company-gtags company-etags company-keywords)
-		   company-oddmuse company-dabbrev company-clang
-		   (company-tern :with company-yasnippet))))
- '(company-minimum-prefix-length 1)
+ '(ag-ignore-list (quote ("i18n/")))
+ '(counsel-ag-base-command "ag --nocolor --nogroup %s")
  '(counsel-etags-update-tags-backend (quote projectile-regenerate-tags))
  '(custom-safe-themes
    (quote
-    ("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" default)))
- '(dumb-jump-prefer-searcher (quote ag))
- '(helm-dash-browser-func (quote eww))
- '(org-agenda-files (quote ("~/bubmake/rapport2.org")))
+    ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
+ '(default-frame-alist (quote ((vertical-scroll-bars))))
+ '(elpy-syntax-check-command "flake8")
+ '(global-hl-line-mode nil)
+ '(ibuffer-formats
+   (quote
+    ((mark " "
+           (name 16 -1)
+           " " filename)
+     (mark modified read-only locked " "
+           (name 18 18 :left :elide)
+           " "
+           (size 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " " filename-and-process))))
+ '(nxml-child-indent 4)
+ '(nxml-outline-child-indent 4)
+ '(org-download-method (quote directory))
  '(package-selected-packages
    (quote
-    (e2wm stumpwm-mode ace-window company-jedi counsel-etags ggtags dumb-jump rainbow-delimiters outline-magic counsel-projectile wgrep-ag minimap ac-etags counsel ivy smart-mode-line which-key expand-region use-package magit dante ghc ghci-completion slime slime-company ng2-mode angular-mode angular-snippets racket-mode vue-mode vue-html-mode neotree lorem-ipsum company-web web-completion-data web-mode sudo-edit indium js3-mode ag xref-js2 js2-refactor company-tern c-eldoc irony-eldoc company-irony irony 0blayout helm-dash company-c-headers company-php company-rtags company-quickhelp elpy yasnippet-snippets simple-httpd skewer-mode js2-mode company company-emacs-eclim eclim org-ref solarized-theme ##)))
- '(projectile-tags-command "uctags -Re -f \"%s\" %s"))
+    (jabber stumpwm-mode bookmark+ bookmark-plus ivy-hydra hydra persp-mode ibuffer-vc vc-msg git-gutter company-jedi ripgrep org-bullets org-bullet multi-term multiterm ivy-rich winnow smart-mode-line wgrep-ag diff-hl dumb-jump expand-region hungry-delete org-download wgrep which-key ace-window try use-package swiper-helm csv-mode ag swiper ggtags magit ahungry-theme js2-mode company-flx flx-isearch all-the-icons-ivy counsel counsel-codesearch counsel-etags ivy aggressive-indent flx-ido projectile sudo-edit solarized-theme seq realgud neotree isend-mode elpygen elpy color-theme-solarized better-shell)))
+ '(projectile-globally-ignored-directories
+   (quote
+    (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "l10n*" "i18n*")))
+ '(projectile-tags-command "ctags -Re --tag-relative=always -f \"%s\" %s \"%s\"")
+ '(projectile-tags-file-name ".TAGS")
+ '(realgud-safe-mode nil)
+ '(realgud:ipdb-command-name "ipdb3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0))))
+ '(whitespace-tab ((t (:foreground "#636363")))))
+
 
 (load-theme 'solarized-dark)
-(require 'org-ref)
-(setq helm-bibtex-bibliography '("/home/geof/bubmake/biblio3.bib"))
-(setq reftex-default-bibliography '("/home/geof/bubmake/biblio3.bib"))
 
 
-(setq org-latex-pdf-process
-    '("pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
-	"bibtex %b"
-	"pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"
-	"pdflatex -interaction nonstopmode -shell-escape -output-directory %o %f"))
 
-;;(setq org-latex-pdf-process '("pdflatex %f" "bibtex %b" "pdflatex %f" "pdflatenx %f"))
-(setq org-src-fontify-natively t)    
 
 
-(setq org-export-latex-listings t)
-(setq org-latex-listings 'minted)
-(add-to-list 'org-latex-packages-alist '("" "minted"))
-(add-to-list 'org-latex-packages-alist '("" "color"))
-;;(add-to-list 'org-latex-packages-alist '("" "listingsutf8"))
-  (setq org-latex-minted-options 
-        '(("frame" "leftline")("linenos=false") ("xrightmargin=5pt") ("fontfamily=courier")("xleftmargin=5pt") ("fontsize" "\\small") ("breaklines=true")))
 
+;; ibuffer
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(setq ibuffer-saved-filter-groups
+      '(("home"
+         ("JS" (filename . ".js"))
 
+         ("Python" (filename . ".py"))
+         ("XML" (filename . ".xml"))
+         ("ag" (name . "\*ag"))
+      ("Magit" (name . "\magit"))
+      ("Dired" (mode . dired-mode))
+      ("Firefox" (name . "\Firefox:"))
+      ("Org" (or (mode . org-mode)
+                 (filename . "OrgMode")))
+      ("Terminal" (name . "\Tilda"))
+      ("Kitchen" (or (name . "\.emacs")
+                       (filename . ".emacs.d")
+                       (filename . "emacs-config")
+                       (name . "\*Warnings\*")
+                       (name . "\*Warnings\*")
+                       (name . "\*Backtrace\*")
+                       (name . "\*scratch\*")))
+      ("Help" (or (name . "\*Help\*")
+                  (name . "\*Apropos\*")
+                     (name . "\*info\*"))))))
 
+(add-hook 'ibuffer-mode-hook
+	  '(lambda ()
+	     (ibuffer-switch-to-saved-filter-groups "home")))
 
+(add-hook 'ibuffer-mode-hook
+	  '(lambda ()
+	     (ibuffer-auto-mode 1)
+	     (ibuffer-switch-to-saved-filter-groups "home")))
 
+(setq ibuffer-show-empty-filter-groups nil)
+(setq ibuffer-expert t)
 
-(require 'ob-ditaa)
 
 
-;; '(org-latex-minted-langs (quote ((emacs-lisp "Lisp") (lisp "Lisp") (clojure "Lisp") (c "C") (cc "C++") (fortran "fortran") (perl "Perl") (cperl "Perl") (python "Python") (ruby "Ruby") (html "HTML") (xml "XML") (tex "TeX") (latex "TeX") (shell-script "bash") (gnuplot "Gnuplot") (ocaml "Caml") (caml "Caml") (sql "SQL") (sqlite "sql") (R-mode "R"))))
-
-(setq org-alphabetical-lists t)
-
-;; Explicitly load required exporters
-
-
-
-
-(setq org-ditaa-jar-path "/home/geof/org/ditaa.jar")
-(setq org-plantuml-jar-path "~/org/plantuml.jar")
-
-;;(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
-(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-
-
-; Make babel results blocks lowercase
-(setq org-babel-results-keyword "results")
-
-(defun bh/display-inline-images ()
-  (condition-case nil
-      (org-display-inline-images)
-    (error nil)))
-
-(org-babel-do-load-languages
- (quote org-babel-load-languages)
- (quote ((emacs-lisp . t)
-         (dot . t)
-	 (C . t)
-         (ditaa . t)
-         (R . t)
-         (python . t)
-         (ruby . t)
-         (gnuplot . t)
-         (clojure . t)
-         (shell . t)
-         (ledger . t)
-         (org . t)
-         (plantuml . t)
-         (latex . t))))
-
-; Do not prompt to confirm evaluation
-; This may be dangerous - make sure you understand the consequences
-; of setting this -- see the docstring for details
-(setq org-confirm-babel-evaluate nil)
-
-; Use fundamental mode when editing plantuml blocks with C-c '
-(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
-
-
-
-;=====================================
-;eclim
-;======================================
-
-;(require 'eclim)
-;(global-eclim-mode)
-
-;(require 'eclimd)
-
-;(require 'eclim)
-;(global-eclim-mode)
-
-
-
-;(require 'company)
-;(require 'company-emacs-eclim)
-;(company-emacs-eclim-setup)
-;(global-company-mode t)
-
-
-;======================================
-
-
-
-;; javascript
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-;; Better imenu
-(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-(require 'js2-refactor)
-(require 'xref-js2)
-
-(add-hook 'js2-mode-hook #'js2-refactor-mode)
-(js2r-add-keybindings-with-prefix "C-c C-r")
-(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
-
-;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
-;; unbind it.
-(define-key js-mode-map (kbd "M-.") nil)
-
-(add-hook 'js2-mode-hook (lambda ()
-  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-
-
-(setq browse-url-browser-function 'browse-url-firefox)
-
-
-(require 'yasnippet)
-(yas-global-mode 1)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;          python
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-					;elpy
-(elpy-enable)
-(setq elpy-rpc-python-command "python3")
-(setq python-shell-interpreter "python3")
-
-;;company
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-
-
-
-;; company quickhelpn
-(company-quickhelp-mode)
-(eval-after-load 'company
-  '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
-
-
-
-;;keybindings company
-(define-key company-active-map (kbd "C-n") 'company-select-next)
-(define-key company-active-map (kbd "C-p") 'company-select-previous)
-
-;; javascript support for company
-(require 'company-tern)
-(add-hook 'js2-mode-hook (lambda ()
-			   (tern-mode)
-			   (company-mode)))
-;; Company integration for tern (js)
-
-
-
-
-
-
-
-;; 
-(require 'company-irony)
-(require 'company-php)
-(require 'company-web)
-
-
-
-(add-hook 'c-mode-hook 'irony-mode)
-
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-irony))
-(add-to-list 'company-backends '(company-tern :with company-yasnippet))
-
-(add-to-list 'company-backends 'company-web-html)
-
-(add-hook 'after-init-hook 'show-paren-mode)
-;;(add-hook 'php-mode 'company-php)
-
-
-
-
-
-(define-minor-mode disable-mouse-mode
-  "A minor-mode that disables all mouse keybinds."
-  :global t
-  :lighter "M"
-  :keymap (make-sparse-keymap))
-
-(dolist (type '(mouse down-mouse drag-mouse
-                      double-mouse triple-mouse))
-  (dolist (prefix '("" C- M- S- M-S- C-M- C-S- C-M-S-))
-    ;; Yes, I actually HAD to go up to 7 here.
-    (dotimes (n 7)
-      (let ((k (format "%s%s-%s" prefix type n)))
-        (define-key disable-mouse-mode-map
-          (vector (intern k)) #'ignore)))))
-
-(disable-mouse-mode 1)
-
-
-
-
-;; Run C programs directly from within emacs
-(defun execute-c-program (args)
-    (save-buffer)
-  (interactive "sArguments : ")
-  (defvar foo)
-
-  (setq foo (concat "gcc " (buffer-name) " && ./a.out " args))
-  (shell-command foo))
-
-
-(global-set-key [C-f1] 'execute-c-program)
-(define-key c-mode-map (kbd "C-x C-m") 'execute-c-program)
 
 
 (require 'neotree)
 (global-set-key [f8] 'neotree-toggle)
 (setq neo-smart-open t)
 
-;; supprime php-mode de la liste des associations des modes majeurs
-;;(setq auto-mode-alist (rassq-delete-all 'php-mode auto-mode-alist))
 
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.scm\\'" . racket-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . ng2-mode))
-;;(require 'geiser)
-;;(setq geiser-default-implementation 'racket)
+;;projectile
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
 
-(setq inferior-lisp-program "/usr/bin/sbcl")
 
-(use-package magit
+
+
+
+
+;; (use-package ivy-rich
+;;   :after ivy
+;;   :ensure t
+;;   :init
+;;   (ivy-rich-mode 1)
+;;   :custom
+;;   (ivy-rich--display-transformers-list
+;;         (quote
+;;          (ivy-switch-buffer
+;;           (:columns
+;;            ((ivy-rich-candidate
+;;              (:width 30))
+;;             (ivy-rich-switch-buffer-indicators
+;;              (:width 4 :face error :align right))
+;;             (ivy-rich-switch-buffer-major-mode
+;;              (:width 12 :face warning))
+;;             (ivy-rich-switch-buffer-project
+;;              (:width 15 :face success))
+;;             (ivy-rich-switch-buffer-path
+;;              (:width
+;;               (lambda
+;;                 (x)
+;;                 (ivy-rich-switch-buffer-shorten-path x
+;;                                                      (ivy-rich-minibuffer-width 0.3)))
+;;               )))
+;;            :predicate
+;;            (lambda
+;;              (cand)
+;;              (get-buffer cand)))
+;;           counsel-M-x
+;;           (:columns
+;;            ((counsel-M-x-transformer
+;;              (:width 40))
+;;             (ivy-rich-counsel-function-docstring
+;;              (:face font-lock-doc-face))))
+;;           counsel-describe-function
+;;           (:columns
+;;            ((counsel-describe-function-transformer
+;;              (:width 40))
+;;             (ivy-rich-counsel-function-docstring
+;;              (:face font-lock-doc-face))))
+;;           counsel-describe-variable
+;;           (:columns
+;;            ((counsel-describe-variable-transformer
+;;              (:width 40))
+;;             (ivy-rich-counsel-variable-docstring
+;;              (:face font-lock-doc-face))))
+;;           counsel-recentf
+;;           (:columns
+;;            ((ivy-rich-candidate
+;;              (:width 0.8))
+;;             (ivy-rich-file-last-modified-time
+;;              (:face font-lock-comment-face)))))))
+
+;;   ;; (ivy-virtual-abbreviate 'full
+;;   ;;                          ivy-rich-switch-buffer-align-virtual-buffer t
+;;   ;;                          ivy-rich-path-style 'abbrev)
+;;   :config
+;;   (ivy-set-display-transformer 'ivy-switch-buffer
+;;                                'ivy-rich--ivy-switch-buffer-transformer)
+
+;;           )
+  ;; (setq ivy-rich--display-transformers-list
+  ;;       '(ivy-switch-buffer
+  ;;         (:columns
+  ;;          ((ivy-rich-candidate (:width 30))  ; return the candidate itself
+  ;;           (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right)); return the buffer indicators
+  ;;           (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))          ; return the major mode info
+  ;;           (ivy-rich-switch-buffer-project (:width 15 :face success))             ; return project name using `projectile'
+  ;;           (ivy-rich-switch-buffer-path
+  ;;            (:width (lambda (x)
+  ;;                      (ivy-rich-switch-buffer-shorten-path
+  ;;                       x
+  ;;                       (ivy-rich-minibuffer-width 0.3))))))  ; return file path relative to project root or `default-directory' if project is nil
+  ;;          :predicate
+  ;;          (lambda (cand) (get-buffer cand)))
+  ;;         counsel-M-x
+  ;;         (:columns
+  ;;          ((counsel-M-x-transformer (:width 40))  ; thr original transfomer
+  ;;           (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))  ; return the docstring of the command
+  ;;         counsel-describe-function
+  ;;         (:columns
+  ;;          ((counsel-describe-function-transformer (:width 40))  ; the original transformer
+  ;;           (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))  ; return the docstring of the function
+  ;;         counsel-describe-variable
+  ;;         (:columns
+  ;;          ((counsel-describe-variable-transformer (:width 40))  ; the original transformer
+  ;;           (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face))))  ; return the docstring of the variable
+  ;;         ))
+
+
+
+; Use Enter on a directory to navigate into the directory, not open it with dired.
+(define-key ivy-minibuffer-map (kbd "C-m") 'ivy-alt-done)
+
+
+
+
+;; flx for search in documents
+;;(global-set-key (kbd "C-s") #'flx-isearch-forward)
+;;(global-set-key (kbd "C-r") #'flx-isearch-backward)
+
+;; flx ido
+;;(require 'flx-ido)
+;;(ido-mode 1)
+;;(ido-everywhere 1)
+;;(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+;;(setq ido-enable-flex-matching t)
+;;(setq ido-use-faces nil)
+;;(setq flx-ido-threshold 10000)
+
+(use-package undo-tree
   :ensure t
-  :bind ("C-x g" . magit-status)
-  )
-
-(use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region)
+  :config
+  (defadvice undo-tree-make-history-save-file-name
+      (after undo-tree activate)
+    (setq ad-return-value (concat ad-return-value ".gz")))
   :init
-  (delete-selection-mode 1))
+  (global-undo-tree-mode))
+
+;; magit
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-c l") 'org-store-link)
+
+;; (require 'web-mode)
+;; (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
+;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . ng2-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+;; met les fichiers temporaires dans le dossier .emacs
+;; https://stackoverflow.com/a/22176971
+
+
+(defvar my-auto-save-folder "~/.emacs.d/auto-save/")
+(setq tramp-auto-save-directory my-auto-save-folder); auto-save tramp files in local directory
+(setq auto-save-list-file-prefix "~/.emacs.d/auto-save/.saves-"); set prefix for auto-saves 
+(setq auto-save-file-name-transforms `((".*" ,my-auto-save-folder t)))
+
+
+(setq backup-directory-alist
+          `(("." . ,(concat user-emacs-directory "backups"))))
+
+
+    ;; scroll one line at a time (less "jumpy" than defaults)
+    (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+    (setq mouse-wheel-progressive-speed t) ;; don't accelerate scrolling
+    
+    (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+;;sublimity
+;;(add-to-list 'load-path "/home/odoo/.emacs.d/sublimity/")
+;;(require 'sublimity)
+;; (require 'sublimity-scroll)
+;; (require 'sublimity-map) ;; experimental
+;; (require 'sublimity-attractive)
+
+(use-package ace-window
+  :ensure t
+  :config
+  (setq aw-dispatch-always 't)
+  :init
+  (progn
+    (global-set-key "\M-o" 'ace-window)
+    (custom-set-faces
+     '(aw-leading-char-face
+       ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+    ))
+
 
 (use-package which-key
-  :ensure t
-  :config
-  (which-key-mode))
-
-(use-package ag
-  :ensure t
-  :config
-  (progn (setq ag-highlight-search t)))
-
-(use-package wgrep-ag
-  :ensure t
-)
-  
-        
-  
-
-
-
-   (use-package counsel
 :ensure t
-  :bind
-  (("M-y" . counsel-yank-pop)
-   ("C-c k" . counsel-ag)
-   :map ivy-minibuffer-map
-   ("M-y" . ivy-next-line)))
+:config
+(which-key-mode))
+
+(use-package org-download
+:ensure t
+:config
+(which-key-mode))
 
 
+(use-package wgrep
+:ensure t
+:config
+(progn
+(which-key-mode)
+(setq wgrep-enable-key "r")))
 
+(use-package swiper
+:ensure try
+:config
+(progn
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-h f") 'counsel-describe-function)
+(global-set-key (kbd "C-h v") 'counsel-describe-variable)
+(global-set-key (kbd "C-h l") 'counsel-find-library)
+(global-set-key (kbd "C-h i") 'counsel-info-lookup-symbol)
+;;(global-set-key (kbd "C-h u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+;;(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
+(setq projectile-completion-system 'ivy)
+; Let ivy use flx for fuzzy-matching
+(require 'flx)
+(setq ivy-height 16)
+(setq ivy-re-builders-alist
+      '((swiper . ivy--regex-plus)
+        (t      . ivy--regex-fuzzy)))
+(global-set-key (kbd "M-x") 'counsel-M-x)
 
-  (use-package ivy
-  :ensure t
-  :diminish (ivy-mode)
-  :bind (("C-x b" . ivy-switch-buffer))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "%d/%d ")
-  (setq ivy-display-style 'fancy)
-  )
+))
 
+; deletes all the whitespace when you hit backspace or delete
+;; (use-package hungry-delete
+;;   :ensure t
+;;   :config
+;;   (global-hungry-delete-mode))
 
-  (use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper)
-	 ("C-r" . swiper)
-	 ("C-c C-r" . ivy-resume)
-	 ("M-x" . counsel-M-x)
-	 ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-    ))
+; expand the marked region in semantic increments (negative prefix to reduce region)
+(use-package expand-region
+:ensure t
+:config
+(global-set-key (kbd "C-=") 'er/expand-region))
+
+(setq org-todo-keywords
+  '((sequence "TODO" "QUESTION" "NO PROBLEM FOR ME" "|" "DONE" "ABANDONED" "NO PROBLEM")))
+
+(use-package dumb-jump
+  :bind (("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g b" . dumb-jump-back)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window)
+         )
+   :config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+  :ensure)
+
+;; WARNING: This will change your life
+;; (OPTIONAL) Visualize tabs as a pipe character - "|"
+;; This will also show trailing characters as they are useful to spot.
+(setq whitespace-style '(face tabs tab-mark trailing))
+
+(setq whitespace-display-mappings
+  '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+
+(global-whitespace-mode) ; Enable whitespace mode everywhere
 
 (use-package wgrep-ag
   :ensure t)
-	     
 
+
+(use-package winnow
+  :ensure t
+  :config
+(add-hook 'compilation-mode-hook 'winnow-mode))
+
+;; (use-package perspective
+;;   :ensure t
+;;   :config
+;;   (persp-mode))
+
+
+;; (use-package outshine
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+;;     (add-hook 'python-mode-hook 'outline-minor-mode)
+;;     (setq outshine-use-speed-commands t))
+;; )
+
+(use-package outline-magic
+  :ensure t
+  :init
+  (progn
+  (add-hook 'outline-mode-hook
+          (lambda ()
+            (require 'outline-cycle)))
+  (add-hook 'outline-minor-mode-hook
+          (lambda ()
+            (require 'outline-magic)
+            (define-key outline-minor-mode-map  (kbd "<C-tab>") 'outline-cycle)))
+  (add-hook 'python-mode-hook 'outline-minor-mode)
+))
 
 (use-package smart-mode-line
   :ensure t
@@ -437,124 +491,129 @@
 (use-package counsel-projectile
   :ensure t
   :bind
-  ("C-c k" . counsel-projectile-ag))
+  (("M-y" . counsel-yank-pop)
+   :map ivy-minibuffer-map
+   ("M-y" . ivy-next-line)))
 
-(use-package projectile
+
+(use-package multi-term
   :ensure t
   :config
-  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
-  (projectile-global-mode)
-  (setq projectile-completion-system 'ivy))
+  (setq multi-term-program "/bin/bash"))
 
-(use-package winnow
-  :ensure t
-  :config
-  (add-hook 'compilation-mode-hook 'winnow-mode))
+(use-package realgud
+  :ensure t)
 
-(use-package eyebrowse
+(use-package org-bullets
   :ensure t
   :init
-  (setq eyebrowse-keymap-prefix (kbd "C-x x"))
-  :config
-  (eyebrowse-mode t)
-  (setq eyebrowse-new-workspace t))
-
-(use-package outline-magic
-  :ensure t
-  :init
-  (progn
-  (add-hook 'outline-mode-hook 
-          (lambda () 
-            (require 'outline-cycle)))
-
-  (add-hook 'outline-minor-mode-hook 
-          (lambda () 
-            (require 'outline-magic)
-            (define-key outline-minor-mode-map  (kbd "<C-tab>") 'outline-cycle)))
-
-
-))
-
-(use-package dumb-jump
-:bind (("M-g o" . dumb-jump-go-other-window)
-("M-g j" . dumb-jump-go)
-("M-g x" . dumb-jump-go-prefer-external)
-("M-g z" . dumb-jump-go-prefer-external-other-window))
-:config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
-:ensure)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+)
 
 (use-package counsel-etags
   :ensure t
   :bind
-  ("M-?" . counsel-etags-find-tag-at-point))
+  ("M-?" . counsel-etags-find-tag-at-point)
+  ("C-c k" . counsel-etags-find-tag))
 
-(use-package company-jedi
-  :ensure t
-  :init
-  (add-to-list 'company-backends 'company-web-html))
+(defun my/python-mode-hook ()
+  (add-to-list 'company-backends 'company-jedi))
 
-(use-package ace-window
-  :ensure t
-  :bind
-  ("M-o" . ace-window)
-  :config
-  (setq aw-dispatch-always 't)
-  (setq aw-dispatch-alist
-  '((?x aw-delete-window " Ace - Delete Window")
-    (?m aw-swap-window " Ace - Swap Window")
-    (?n aw-flip-window)
-    (?v aw-split-window-vert " Ace - Split Vert Window")
-    (?b aw-split-window-horz " Ace - Split Horz Window")
-    (?i delete-other-windows " Ace - Maximize Window")
-    (?o delete-other-windows))
-  (?? aw-show-dispatch-help))
-  "List of actions for `aw-dispatch-default'.")
+(add-hook 'python-mode-hook 'my/python-mode-hook)
+
+(use-package git-gutter
+  :ensure t)
+
+(use-package vc-msg
+  :ensure t)
 
 
-(use-package ivy-hydra
+(use-package eyebrowse
   :ensure t
   :config
   (progn
-  (define-key ivy-minibuffer-map (kbd "C-o") 'hydra-ivy/body)
-(defun ivy-dired-mark (arg)
-  (interactive "p")
-  (dotimes (_i arg)
-    (with-ivy-window
-      (dired-mark 1))
-    (ivy-next-line 1)
-    (ivy--exhibit)))
+  (eyebrowse-mode t)
+  (setq eyebrowse-new-workspace t))
+  :bind
+  ("<M-right>" . eyebrowse-next-window-config)
+  ("<M-left>" . eyebrowse-prev-window-config)
+  ("M-n" . eyebrowse-create-window-config)
+  )
 
-(defun ivy-dired-unmark (arg)
-  (interactive "p")
-  (dotimes (_i arg)
-    (with-ivy-window
-      (dired-unmark 1))
-    (ivy-next-line 1)
-    (ivy--exhibit)))
-
-(defun ivy-replace ()
-  (interactive)
-  (let ((from (with-ivy-window
-                (move-beginning-of-line nil)
-                (when (re-search-forward
-                       (ivy--regex ivy-text) (line-end-position) t)
-                  (match-string 0)))))
-    (if (null from)
-        (user-error "No match")
-      (let ((rep (read-string (format "Replace [%s] with: " from))))
-        (with-selected-window swiper--window
-          (undo-boundary)
-          (replace-match rep t t))))))
-
-(defun ivy-undo ()
-  (interactive)
-  (with-ivy-window
-    (undo)))    
-  
-))
+(use-package ibuffer-vc
+  :ensure t
+  )
 
 
-(defhydra hydra-dired (:hint nil :color pink)
+
+(defun ivy-default-view-name ()
+  "Return default name for new view."
+  (let* ((default-view-name
+          (concat "<> "
+                  (mapconcat #'identity
+                             (sort
+                              (mapcar (lambda (w)
+                                        (let* ((b (window-buffer w))
+                                               (f (buffer-file-name b)))
+                                          (if f
+                                              (file-name-nondirectory f)
+                                            (buffer-name b))))
+                                      (window-list))
+                              #'string-lessp)
+                             " | ")))
+         (view-name-re (concat "\\`"
+                               (regexp-quote default-view-name)
+                               " \\([0-9]+\\)"))
+         old-view)
+    (cond ((setq old-view
+                 (cl-find-if
+                  (lambda (x)
+                    (string-match view-name-re (car x)))
+                  ivy-views))
+           (format "%s %d"
+                   default-view-name
+                   (1+ (string-to-number
+                        (match-string 1 (car old-view))))))
+          ((assoc default-view-name ivy-views)
+           (concat default-view-name " 1"))
+          (t
+           default-view-name))))
+
+(defun custom-save-ivy-views ()
+(interactive)
+(with-temp-file "~/.emacs.d/ivy-views"
+(prin1 ivy-views (current-buffer))
+(message "save ivy-views to ~/.emacs.d/ivy-views")))
+(global-set-key (kbd "C-c s") 'custom-save-ivy-views)
+(global-set-key (kbd "C-c C-v") 'ivy-switch-view)
+
+(defun custom-load-ivy-views ()
+(interactive)
+(setq ivy-views
+(with-temp-buffer
+(insert-file-contents "~/.emacs.d/ivy-views")
+(read (current-buffer))))
+(message "load ivy-views"))
+
+(custom-load-ivy-views)
+
+
+;; (use-package persp-mode
+;;   :ensure t
+;;   :init
+;;   (persp-mode)
+;;   (setq persp-save-dir (concat "~/.emacs.d" "/persp-confs/")
+;;         persp-auto-save-opt 0)
+;;   :config
+;;   (add-hook 'kill-emacs-hook 'persp/close-perspective)
+;;   :bind
+;;   ("C-x p p" . persp/switch-to-current-branch-persp))
+
+(use-package hydra
+  :ensure t
+  :config
+  (progn
+  (defhydra hydra-dired (:hint nil :color pink)
   "
 _+_ mkdir          _v_iew           _m_ark             _(_ details        _i_nsert-subdir    wdired
 _C_opy             _O_ view other   _U_nmark all       _)_ omit-mode      _$_ hide-subdir    C-x C-q : edit
@@ -605,13 +664,134 @@ T - tag prefix
   ("q" nil)
   ("." nil :color blue))
 
-(define-key dired-mode-map "?" 'hydra-dired/body)
+;;  (define-key dired-mode-map "." 'hydra-dired/body)
+  ))
 
-(use-package undo-tree
+(use-package ivy-hydra
   :ensure t
-  :init
-  (global-undo-tree-mode t)
-)
+  :config
+  (define-key ivy-minibuffer-map (kbd "C-o") 'hydra-ivy/body))
 
-(use-package e2wm
-  :ensure t)
+
+;; (use-package bookmark+
+;;   :ensure t)
+
+'(require
+'jabber)
+
+
+;;;; Below are configurations for EXWM.
+
+;; Add paths (not required if EXWM is installed from GNU ELPA).
+;(add-to-list 'load-path "/path/to/xelb/")
+;(add-to-list 'load-path "/path/to/exwm/")
+
+;; Load EXWM.
+(require 'exwm)
+
+;; Fix problems with Ido (if you use it).
+(require 'exwm-config)
+;;(exwm-config-ido)
+
+;; Set the initial number of workspaces (they can also be created later).
+(setq exwm-workspace-number 4)
+
+;; All buffers created in EXWM mode are named "*EXWM*". You may want to
+;; change it in `exwm-update-class-hook' and `exwm-update-title-hook', which
+;; are run when a new X window class name or title is available.  Here's
+;; some advice on this topic:
+;; + Always use `exwm-workspace-rename-buffer` to avoid naming conflict.
+;; + For applications with multiple windows (e.g. GIMP), the class names of
+;    all windows are probably the same.  Using window titles for them makes
+;;   more sense.
+;; In the following example, we use class names for all windows expect for
+;; Java applications and GIMP.
+(add-hook 'exwm-update-class-hook
+          (lambda ()
+            (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                        (string= "gimp" exwm-instance-name))
+              (exwm-workspace-rename-buffer exwm-class-name))))
+(add-hook 'exwm-update-title-hook
+          (lambda ()
+            (when (or (not exwm-instance-name)
+                      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+                      (string= "gimp" exwm-instance-name))
+              (exwm-workspace-rename-buffer exwm-title))))
+
+;; Global keybindings can be defined with `exwm-input-global-keys'.
+;; Here are a few examples:
+(setq exwm-input-global-keys
+      `(
+        ;; Bind "s-r" to exit char-mode and fullscreen mode.
+        ([?\s-r] . exwm-reset)
+        ;; Bind "s-w" to switch workspace interactively.
+        ([?\s-w] . exwm-workspace-switch)
+        ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+        ,@(mapcar (lambda (i)
+                    `(,(kbd (format "s-%d" i)) .
+                      (lambda ()
+                        (interactive)
+                        (exwm-workspace-switch-create ,i))))
+                  (number-sequence 0 9))
+        ;; Bind "s-&" to launch applications ('M-&' also works if the output
+        ;; buffer does not bother you).
+        ([?\s-&] . (lambda (command)
+		     (interactive (list (read-shell-command "$ ")))
+		     (start-process-shell-command command nil command)))
+        ;; Bind "s-<f2>" to "slock", a simple X display locker.
+        ([s-f2] . (lambda ()
+		    (interactive)
+		    (start-process "" nil "/usr/bin/slock")))))
+
+;; To add a key binding only available in line-mode, simply define it in
+;; `exwm-mode-map'.  The following example shortens 'C-c q' to 'C-q'.
+(define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
+
+;; The following example demonstrates how to use simulation keys to mimic
+;; the behavior of Emacs.  The value of `exwm-input-simulation-keys` is a
+;; list of cons cells (SRC . DEST), where SRC is the key sequence you press
+;; and DEST is what EXWM actually sends to application.  Note that both SRC
+;; and DEST should be key sequences (vector or string).
+(setq exwm-input-simulation-keys
+      '(
+        ;; movement
+        ([?\C-b] . [left])
+        ([?\M-b] . [C-left])
+        ([?\C-f] . [right])
+        ([?\M-f] . [C-right])
+        ([?\C-p] . [up])
+        ([?\C-n] . [down])
+        ([?\C-a] . [home])
+        ([?\C-e] . [end])
+        ([?\M-v] . [prior])
+        ([?\C-v] . [next])
+        ([?\C-d] . [delete])
+        ([?\C-k] . [S-end delete])
+        ;; cut/paste.
+        ([?\C-w] . [?\C-x])
+        ([?\M-w] . [?\C-c])
+        ([?\C-y] . [?\C-v])
+        ;; search
+        ([?\C-s] . [?\C-f])
+        ;; refresh
+        ([?\C-r] . [<f5>])
+        ))
+
+;; You can hide the minibuffer and echo area when they're not used, by
+;; uncommenting the following line.
+;;(setq exwm-workspace-minibuffer-position 'bottom)
+
+;; Do not forget to enable EXWM. It will start by itself when things are
+;; ready.  You can put it _anywhere_ in your configuration.
+(exwm-enable)
+
+(defun exwm-rename-buffer ()
+  (interactive)
+  (exwm-workspace-rename-buffer
+   (concat exwm-class-name ":"
+           (if (<= (length exwm-title) 50) exwm-title
+             (concat (substring exwm-title 0 49) "...")))))
+
+;; Add these hooks in a suitable place (e.g., as done in exwm-config-default)
+(add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
+(add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
