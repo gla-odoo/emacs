@@ -103,7 +103,7 @@
  '(org-download-method (quote directory))
  '(package-selected-packages
    (quote
-    (jabber stumpwm-mode bookmark+ bookmark-plus ivy-hydra hydra persp-mode ibuffer-vc vc-msg git-gutter company-jedi ripgrep org-bullets org-bullet multi-term multiterm ivy-rich winnow smart-mode-line wgrep-ag diff-hl dumb-jump expand-region hungry-delete org-download wgrep which-key ace-window try use-package swiper-helm csv-mode ag swiper ggtags magit ahungry-theme js2-mode company-flx flx-isearch all-the-icons-ivy counsel counsel-codesearch counsel-etags ivy aggressive-indent flx-ido projectile sudo-edit solarized-theme seq realgud neotree isend-mode elpygen elpy color-theme-solarized better-shell)))
+    (switch-window jabber stumpwm-mode bookmark+ bookmark-plus ivy-hydra hydra persp-mode ibuffer-vc vc-msg git-gutter company-jedi ripgrep org-bullets org-bullet multi-term multiterm ivy-rich winnow smart-mode-line wgrep-ag diff-hl dumb-jump expand-region hungry-delete org-download wgrep which-key ace-window try use-package swiper-helm csv-mode ag swiper ggtags magit ahungry-theme js2-mode company-flx flx-isearch all-the-icons-ivy counsel-codesearch counsel-etags ivy aggressive-indent flx-ido projectile sudo-edit solarized-theme seq realgud neotree isend-mode elpygen elpy color-theme-solarized better-shell)))
  '(projectile-globally-ignored-directories
    (quote
     (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "l10n*" "i18n*")))
@@ -121,9 +121,6 @@
 
 
 (load-theme 'solarized-dark)
-
-
-
 
 
 
@@ -337,7 +334,6 @@
     ;; scroll one line at a time (less "jumpy" than defaults)
     (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
     (setq mouse-wheel-progressive-speed t) ;; don't accelerate scrolling
-    
     (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 ;;sublimity
 ;;(add-to-list 'load-path "/home/odoo/.emacs.d/sublimity/")
@@ -346,16 +342,24 @@
 ;; (require 'sublimity-map) ;; experimental
 ;; (require 'sublimity-attractive)
 
-(use-package ace-window
+;; (use-package ace-window
+;;   :ensure t
+;;   :config
+;;   (setq aw-dispatch-always 't)
+;;   :init
+;;   (progn
+;;     (global-set-key "\M-o" 'ace-window)
+;;     (custom-set-faces
+;;      '(aw-leading-char-face
+;;        ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+;;     ))
+(use-package switch-window
   :ensure t
-  :config
-  (setq aw-dispatch-always 't)
   :init
   (progn
-    (global-set-key "\M-o" 'ace-window)
-    (custom-set-faces
-     '(aw-leading-char-face
-       ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+    (global-set-key "\M-o" 'switch-window)
+    (exwm-input-set-key (kbd "M-o") 'switch-window)
+    (setq switch-window-input-style 'minibuffer)
     ))
 
 
@@ -376,6 +380,8 @@
 (progn
 (which-key-mode)
 (setq wgrep-enable-key "r")))
+
+
 
 (use-package swiper
 :ensure try
@@ -409,6 +415,8 @@
 (global-set-key (kbd "M-x") 'counsel-M-x)
 
 ))
+
+
 
 ; deletes all the whitespace when you hit backspace or delete
 ;; (use-package hungry-delete
@@ -597,7 +605,6 @@
 
 (custom-load-ivy-views)
 
-
 ;; (use-package persp-mode
 ;;   :ensure t
 ;;   :init
@@ -718,6 +725,7 @@ T - tag prefix
                       (string= "gimp" exwm-instance-name))
               (exwm-workspace-rename-buffer exwm-title))))
 
+
 ;; Global keybindings can be defined with `exwm-input-global-keys'.
 ;; Here are a few examples:
 (setq exwm-input-global-keys
@@ -746,7 +754,7 @@ T - tag prefix
 ;; To add a key binding only available in line-mode, simply define it in
 ;; `exwm-mode-map'.  The following example shortens 'C-c q' to 'C-q'.
 (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
-
+(exwm-input-set-key (kbd "s-SPC") #'counsel-linux-app)
 ;; The following example demonstrates how to use simulation keys to mimic
 ;; the behavior of Emacs.  The value of `exwm-input-simulation-keys` is a
 ;; list of cons cells (SRC . DEST), where SRC is the key sequence you press
@@ -775,6 +783,7 @@ T - tag prefix
         ([?\C-s] . [?\C-f])
         ;; refresh
         ([?\C-r] . [<f5>])
+        ([?\C-g] . [escape])
         ))
 
 ;; You can hide the minibuffer and echo area when they're not used, by
@@ -784,6 +793,42 @@ T - tag prefix
 ;; Do not forget to enable EXWM. It will start by itself when things are
 ;; ready.  You can put it _anywhere_ in your configuration.
 (exwm-enable)
+
+
+
+
+(require 'exwm-randr)
+(setq exwm-randr-workspace-output-plist
+  '(0 "eDP-1" 1 "HDMI-1" 2 "HDMI-1"))
+(add-hook 'exwm-randr-screen-change-hook
+      (lambda ()
+        (start-process-shell-command
+         "xrandr" nil "xrandr --output eDP-1 --output HDMI-1 --auto")))
+
+
+;;(setq exwm-randr-workspace-output-plist '(1 "eDP-1"))
+;; (add-hook 'exwm-randr-screen-change-hook
+;;           (lambda ()
+;;             (start-process-shell-command
+;;              "xrandr" nil "xrandr --output eDP-1 --right-of HDMI-1 --auto")))
+;; (defun exwm-change-screen-hook ()       ;
+;;   (let ((xrandr-output-regexp "\n\\([^ ]+\\) connected ")
+;;         default-output)
+;;     (with-temp-buffer
+;;       (call-process "xrandr" nil t nil)
+;;       (goto-char (point-min))
+;;       (re-search-forward xrandr-output-regexp nil 'noerror)
+;;       (setq default-output (match-string 1))
+;;       (forward-line)
+;;       (if (not (re-search-forward xrandr-output-regexp nil 'noerror))
+;;           (call-process "xrandr" nil nil nil "--output" default-output "--auto")
+;;         (call-process
+;;          "xrandr" nil nil nil
+;;          "--output" (match-string 1) "--primary" "--auto"
+;;          "--output" default-output "--off")
+;;         (setq exwm-randr-workspace-output-plist (list 0 (match-string 1)))))))
+(exwm-randr-enable)
+
 
 (defun exwm-rename-buffer ()
   (interactive)
@@ -795,3 +840,8 @@ T - tag prefix
 ;; Add these hooks in a suitable place (e.g., as done in exwm-config-default)
 (add-hook 'exwm-update-class-hook 'exwm-rename-buffer)
 (add-hook 'exwm-update-title-hook 'exwm-rename-buffer)
+;; to properly close xfce when leaving
+(add-hook 'exwm-exit-hook (lambda ()
+                        (shell-command "killall xfce4-session")))
+;; (add-hook 'exwm-exit-hook (lambda ()
+;;                         (shell-command "killall firefox")))
