@@ -1,7 +1,7 @@
-setxkbmap -option ctrl:nocaps
+setxkbmap be -option ctrl:nocaps
 
 # # # Keyboard repeat rate
-xset r rate 200 60
+xset r rate 300 60
 
 ############# stump ###############
 #/usr/local/bin/stumpwm
@@ -15,10 +15,12 @@ xhost +SI:localuser:$USER
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # # Themes, etc
- #gnome-settings-daemon &
+# xfsettingsd &
 
 # # Fallback cursor
 xsetroot -cursor_name left_ptr
 
 # # Start Emacs
 exec dbus-launch --exit-with-session emacs
+#sleep 5
+#startxfce4

@@ -4,7 +4,6 @@
 
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
-
 (defvar outline-minor-mode-prefix "\M-\"")
 
 
@@ -103,7 +102,7 @@
  '(org-download-method (quote directory))
  '(package-selected-packages
    (quote
-    (switch-window jabber stumpwm-mode bookmark+ bookmark-plus ivy-hydra hydra persp-mode ibuffer-vc vc-msg git-gutter company-jedi ripgrep org-bullets org-bullet multi-term multiterm ivy-rich winnow smart-mode-line wgrep-ag diff-hl dumb-jump expand-region hungry-delete org-download wgrep which-key ace-window try use-package swiper-helm csv-mode ag swiper ggtags magit ahungry-theme js2-mode company-flx flx-isearch all-the-icons-ivy counsel-codesearch counsel-etags ivy aggressive-indent flx-ido projectile sudo-edit solarized-theme seq realgud neotree isend-mode elpygen elpy color-theme-solarized better-shell)))
+    (window-purpose-x window-purpose switch-window jabber stumpwm-mode bookmark+ bookmark-plus ivy-hydra hydra persp-mode ibuffer-vc vc-msg git-gutter company-jedi ripgrep org-bullets org-bullet multi-term multiterm ivy-rich winnow smart-mode-line wgrep-ag diff-hl dumb-jump expand-region hungry-delete org-download wgrep which-key ace-window try use-package swiper-helm csv-mode ag swiper ggtags magit ahungry-theme js2-mode company-flx flx-isearch all-the-icons-ivy counsel-codesearch counsel-etags ivy aggressive-indent flx-ido projectile sudo-edit solarized-theme seq realgud neotree isend-mode elpygen elpy color-theme-solarized better-shell)))
  '(projectile-globally-ignored-directories
    (quote
     (".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" "l10n*" "i18n*")))
@@ -799,11 +798,11 @@ T - tag prefix
 
 (require 'exwm-randr)
 (setq exwm-randr-workspace-output-plist
-  '(0 "eDP-1" 1 "HDMI-1" 2 "HDMI-1"))
+  '(0 "eDP-1" 1 "HDMI-1"))
 (add-hook 'exwm-randr-screen-change-hook
       (lambda ()
         (start-process-shell-command
-         "xrandr" nil "xrandr --output eDP-1 --output HDMI-1 --auto")))
+         "xrandr" nil "xrandr --output eDP-1 right-of HDMI-1 --auto")))
 
 
 ;;(setq exwm-randr-workspace-output-plist '(1 "eDP-1"))
@@ -843,5 +842,86 @@ T - tag prefix
 ;; to properly close xfce when leaving
 (add-hook 'exwm-exit-hook (lambda ()
                         (shell-command "killall xfce4-session")))
-;; (add-hook 'exwm-exit-hook (lambda ()
-;;                         (shell-command "killall firefox")))
+(add-hook 'exwm-exit-hook (lambda ()
+                        (shell-command "killall firefox")))
+(use-package window-purpose
+  :ensure t
+  :init
+  (purpose-mode t)
+)
+
+
+
+;;;###autoload
+(defun exwm-workspace-switch-to-buffer-in-workspace (buffer-or-name)
+  "Switch to a workspace displaying the given buffer."
+  (interactive
+   (let ((inhibit-quit t))
+     ;; Show all buffers temporarily.
+     (unless exwm-workspace-show-all-buffers
+       (dolist (pair exwm--id-buffer-alist)
+         (with-current-buffer (cdr pair)
+           (when (= ?\s (aref (buffer-name) 0))
+             (rename-buffer (substring (buffer-name) 1))))))
+     (prog1
+         (with-local-quit
+           (list (get-buffer (read-buffer-to-switch "Switch to buffer: "))))
+       ;; Hide buffers on other workspaces again.
+       (unless exwm-workspace-show-all-buffers
+         (dolist (pair exwm--id-buffer-alist)
+           (with-current-buffer (cdr pair)
+             (unless (or (eq exwm--frame exwm-workspace--current)
+                         (= ?\s (aref (buffer-name) 0)))
+               (rename-buffer (concat " " (buffer-name))))))))))
+  (when buffer-or-name
+    (with-current-buffer buffer-or-name
+      (if (not (eq major-mode 'exwm-mode))
+          ;; Ordinary buffer.
+          (let ((window (get-buffer-window buffer-or-name t)))
+            (if window
+                (select-window window)
+              (switch-to-buffer buffer-or-name)))
+        ;; EXWM buffer.
+        (unless (eq exwm--frame exwm-workspace--current)
+          (exwm-workspace-switch exwm--frame))
+        (if (not exwm--floating-frame)
+            (select-window (get-buffer-window buffer-or-name))
+           ;; (switch-to-buffer buffer-or-name)
+;; Select the floating frame.
+          (select-frame-set-input-focus exwm--floating-frame)
+          (select-window (frame-root-window exwm--floating-frame)))))))
+
+
+(global-set-key (kbd "C-x x") 'exwm-workspace-switch-to-buffer-in-workspace)
+
+(setq tilda-or-nil (get-buffer "Tilda"))
+tilda-or-nil
+(defun my/tilda ()
+  "Open tilda in buffer below current (launch it if doesn't exist)"
+  (interactive)
+  (let ((tilda-or-nil (get-buffer "Tilda")))
+    (if tilda-or-nil
+        (if (get-buffer-window tilda-or-nil)
+            (progn (select-window (get-buffer-window tilda-or-nil))
+                   (delete-window)
+                   "Tilda here")
+          (progn
+            (select-window (display-buffer-at-bottom tilda-or-nil nil))
+             (set-window-text-height nil 10)
+            ;; (switch-to-buffer tilda-or-nil)
+            "Tilda but not here"))
+      (progn (split-window-below)
+             (other-window 1)
+             (set-window-text-height nil 10)
+                 (switch-to-buffer tilda-or-nil)
+                 (start-process-shell-command "Tilda" nil "tilda")
+                                    "No Tilda"))))
+;; (my/tilda)
+(push (elt (kbd "<f1>") 0) exwm-input-prefix-keys)
+(global-set-key (kbd "<f1>") 'my/tilda)
+
+
+
+;; (let ((tilda-buffer (get-buffer "Tilda")))
+;; (select-window (display-buffer-at-bottom tilda-buffer nil)))
+
